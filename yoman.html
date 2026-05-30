@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shield — Privacy-first infrastructure for DeFi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:16px;scroll-behavior:smooth;}
+:root{
+  --bg:#ffffff;
+  --bg2:#f8f8f8;
+  --white:#ffffff;
+  --gray1:#111111;
+  --gray2:#444444;
+  --gray3:#888888;
+  --gray4:#cccccc;
+  --gray5:#eeeeee;
+  --gray6:#f5f5f5;
+  --border:rgba(0,0,0,0.08);
+  --border2:rgba(0,0,0,0.06);
+  --purple:#6366f1;
+  --purple-dim:rgba(99,102,241,0.1);
+  --purple-glow:rgba(99,102,241,0.06);
+  --green:#16a34a;
+  --green-dim:rgba(22,163,74,0.1);
+  --red-dim:rgba(239,68,68,0.1);
+  --red:#dc2626;
+}
+body{
+  background:var(--bg);
+  color:#111111;
+  font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{background:rgba(99,102,241,0.2);color:#111;}
+::-webkit-scrollbar{width:2px;background:#fff;}
+::-webkit-scrollbar-thumb{background:#ddd;}
+
+/* ══════════════════════════════
+   LOADING SCREEN
+══════════════════════════════ */
+#loader{
+  position:fixed;inset:0;
+  background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;
+  transition:opacity 0.6s ease;
+}
+#loader.hidden{opacity:0;pointer-events:none;}
+.loader-text{
+  font-size:clamp(24px,4vw,42px);
+  font-weight:500;
+  letter-spacing:0.5em;
+  color:#111;
+  text-transform:uppercase;
+  animation:loaderPulse 1.5s ease-in-out;
+}
+@keyframes loaderPulse{
+  0%{opacity:0;letter-spacing:0.8em;}
+  60%{opacity:1;letter-spacing:0.5em;}
+  100%{opacity:1;letter-spacing:0.5em;}
+}
+
+/* ══════════════════════════════
+   NAV
+══════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;
+  height:52px;
+  background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(0,0,0,0.07);
+}
+.nav-logo{
+  font-size:13px;font-weight:600;
+  letter-spacing:0.08em;
+  color:#111;text-decoration:none;
+}
+.nav-center{display:flex;gap:28px;align-items:center;}
+.nav-center a{
+  font-size:12px;font-weight:400;
+  color:#777;text-decoration:none;
+  transition:color 0.15s;
+}
+.nav-center a:hover{color:#111;}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.btn-ghost-nav{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:400;
+  color:#777;
+  background:none;border:none;cursor:pointer;
+  padding:6px 10px;text-decoration:none;
+  transition:color 0.15s;
+}
+.btn-ghost-nav:hover{color:#111;}
+.btn-ghost-nav svg{width:14px;height:14px;}
+.btn-app{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:500;
+  color:#fff;
+  background:#111;
+  border:1px solid #111;
+  border-radius:6px;
+  padding:7px 14px;
+  text-decoration:none;
+  transition:background 0.15s,border-color 0.15s;
+  cursor:pointer;
+}
+.btn-app:hover{background:#333;border-color:#333;}
+
+/* ══════════════════════════════
+   HERO
+══════════════════════════════ */
+.hero{
+  position:relative;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  overflow:hidden;
+  padding:80px 40px 60px;
+}
+
+/* Animated canvas background */
+.hero-geo{
+  position:absolute;inset:0;
+  overflow:hidden;
+  pointer-events:none;
+}
+#heroCanvas{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  opacity:1;
+}
+/* noise texture */
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:0.5;pointer-events:none;z-index:1;
+}
+
+.hero-content{position:relative;z-index:2;max-width:680px;margin:0 auto;}
+
+.hero-label{
+  font-size:11px;font-weight:400;
+  color:#555;
+  letter-spacing:0.08em;
+  margin-bottom:28px;
+  display:block;
+}
+
+.hero-title{
+  font-size:clamp(36px,5.5vw,64px);
+  font-weight:700;
+  line-height:1.1;
+  letter-spacing:-0.02em;
+  color:#111;
+  margin-bottom:16px;
+}
+.hero-title .rotating-word{
+  display:inline-block;
+  color:#111;
+  position:relative;
+  font-style:italic;
+  opacity:0.35;
+}
+
+.hero-sub{
+  font-size:14px;font-weight:400;
+  color:#666;
+  line-height:1.6;
+  margin-bottom:32px;
+}
+
+.hero-btns{
+  display:flex;gap:10px;justify-content:center;
+  margin-bottom:40px;
+  flex-wrap:wrap;
+}
+
+.btn-pill-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:500;
+  color:#fff;
+  background:#111;
+  border:1px solid #111;
+  border-radius:100px;
+  padding:10px 22px;
+  text-decoration:none;
+  transition:background 0.15s;
+  cursor:pointer;
+}
+.btn-pill-primary:hover{background:#333;border-color:#333;}
+
+.btn-pill-ghost{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:400;
+  color:#555;
+  background:transparent;
+  border:1px solid rgba(0,0,0,0.15);
+  border-radius:100px;
+  padding:10px 22px;
+  text-decoration:none;
+  transition:color 0.15s,border-color 0.15s;
+  cursor:pointer;
+}
+.btn-pill-ghost:hover{color:#111;border-color:rgba(0,0,0,0.3);}
+
+.hero-tags{
+  display:flex;gap:24px;justify-content:center;
+  flex-wrap:wrap;
+}
+.hero-tag{
+  font-size:11px;font-weight:400;
+  color:#aaa;
+  letter-spacing:0.05em;
+}
+
+/* ══════════════════════════════
+   SECTION: PRIVACY IN ONE LINE
+══════════════════════════════ */
+.code-section{
+  padding:100px 40px;
+  text-align:center;
+  background:#f4f4f6;
+  position:relative;
+}
+.code-section::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none;
+}
+
+.section-eyebrow{
+  font-size:11px;font-weight:400;
+  color:#999;letter-spacing:0.08em;
+  margin-bottom:16px;display:block;
+}
+.section-title{
+  font-size:clamp(28px,4vw,48px);
+  font-weight:700;letter-spacing:-0.025em;
+  color:#111;margin-bottom:12px;line-height:1.1;
+}
+.section-sub{
+  font-size:14px;font-weight:400;
+  color:#666;margin-bottom:48px;
+}
+
+.code-compare{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:14px;max-width:900px;margin:0 auto 32px;
+  position:relative;
+}
+/* purple ambient glow behind right card */
+.code-compare::after{
+  content:'';
+  position:absolute;
+  right:-40px;top:-40px;
+  width:320px;height:320px;
+  background:radial-gradient(circle, rgba(80,50,200,0.18) 0%, transparent 70%);
+  pointer-events:none;
+  z-index:0;
+}
+.code-card,.code-card.private-card{position:relative;z-index:1;}
+
+.code-card{
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.1);
+  overflow:hidden;
+  text-align:left;
+  background:#141820;
+}
+.code-card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.code-card-label{
+  font-size:10px;font-weight:500;letter-spacing:0.12em;
+  text-transform:uppercase;color:#888;
+}
+.badge{
+  font-size:10px;font-weight:500;
+  padding:3px 10px;border-radius:20px;letter-spacing:0.04em;
+  display:flex;align-items:center;gap:5px;
+}
+.badge::before{content:'●';font-size:7px;}
+.badge-exposed{background:rgba(180,30,30,0.35);color:#fc8181;border:1px solid rgba(180,30,30,0.4);}
+.badge-private{background:rgba(60,80,200,0.35);color:#93c5fd;border:1px solid rgba(60,80,200,0.5);}
+
+.code-card pre{
+  padding:22px 20px;
+  font-family:'Courier New',monospace;
+  font-size:12px;line-height:1.95;
+  color:#8899aa;
+  background:transparent;
+}
+
+/* Right card — purple/indigo dark */
+.code-card.private-card{
+  background:#12102a;
+  border-color:rgba(100,80,200,0.3);
+}
+.code-card.private-card .code-card-header{
+  border-bottom-color:rgba(100,80,200,0.2);
+}
+.code-card.private-card pre{color:#9aabcc;}
+
+.c-import{color:#b794f4;}
+.c-kw{color:#b794f4;}
+.c-fn-std{color:#76e4f7;}
+.c-fn-prv{color:#76e4f7;}
+.c-num{color:#fbb6ce;}
+.c-str{color:#68d391;}
+.c-cm-bad{color:#546e7a;font-style:italic;}
+.c-cm-good{color:#38bdf8;font-style:italic;}
+.c-from-std{color:#68d391;}
+.c-from-prv{color:#68d391;}
+
+.install-box{
+  max-width:440px;margin:0 auto;
+  background:#fff;
+  border:1px solid rgba(0,0,0,0.1);
+  border-radius:8px;
+  overflow:hidden;
+}
+.install-label{
+  font-size:10px;letter-spacing:0.15em;text-transform:uppercase;
+  color:#888;
+  padding:10px 16px;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+  text-align:left;
+}
+.install-cmd{
+  font-family:'Courier New',monospace;
+  font-size:13px;color:#111;
+  padding:14px 16px;text-align:left;
+  display:flex;align-items:center;gap:10px;
+}
+.install-cmd .prompt{color:#888;}
+.install-cmd .pkg{color:#6366f1;}
+
+/* ══════════════════════════════
+   PRODUCTS
+══════════════════════════════ */
+.products-section{
+  padding:100px 40px;
+  text-align:center;
+  background:#f4f4f6;
+  position:relative;
+}
+.products-section::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+}
+
+.products-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:32px;max-width:900px;margin:48px auto 0;
+  text-align:left;
+}
+.product-item{}
+.product-icon{
+  width:32px;height:32px;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+}
+.product-title{
+  font-size:14px;font-weight:600;
+  color:#111;margin-bottom:10px;
+}
+.product-desc{
+  font-size:13px;font-weight:400;
+  color:#555;line-height:1.7;
+}
+
+/* ══════════════════════════════
+   HOW IT WORKS
+══════════════════════════════ */
+.how-section{
+  padding:100px 40px;
+  text-align:center;
+  background:#fff;
+  position:relative;
+}
+.how-section::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+}
+
+.how-steps{
+  max-width:640px;margin:48px auto 0;
+  text-align:left;
+}
+.how-step{
+  display:flex;gap:24px;
+  padding:28px 0;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+  position:relative;
+}
+.how-step:last-child{border-bottom:none;}
+
+.step-num-badge{
+  font-size:11px;font-weight:500;
+  color:#aaa;
+  min-width:20px;
+  padding-top:2px;
+  flex-shrink:0;
+  font-variant-numeric:tabular-nums;
+}
+.step-content{}
+.step-title{
+  font-size:15px;font-weight:600;
+  color:#111;margin-bottom:8px;
+  letter-spacing:-0.01em;
+}
+.step-desc{
+  font-size:13px;font-weight:400;
+  color:#555;line-height:1.7;
+}
+
+/* ══════════════════════════════
+   PROTOCOL DIAGRAM
+══════════════════════════════ */
+.protocol-section{
+  padding:100px 40px;
+  text-align:center;
+  background:#f4f4f6;
+  position:relative;
+}
+.protocol-section::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+}
+
+.diagram{
+  max-width:520px;margin:48px auto 64px;
+  position:relative;
+}
+#diagramCanvas{
+  width:100%;
+  height:320px;
+  display:block;
+}
+
+/* Privacy features grid */
+.privacy-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:x;max-width:700px;margin:48px auto 0;
+  gap:48px 80px;text-align:left;
+}
+.privacy-feat-title{
+  font-size:14px;font-weight:600;
+  color:#111;margin-bottom:8px;
+}
+.privacy-feat-desc{
+  font-size:13px;color:#555;line-height:1.7;
+}
+
+/* ══════════════════════════════
+   CTA
+══════════════════════════════ */
+.cta-section{
+  padding:100px 40px;
+  text-align:center;
+  background:#fff;
+  position:relative;
+  overflow:hidden;
+}
+.cta-section::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+}
+
+.cta-title{
+  font-size:clamp(28px,4vw,48px);
+  font-weight:700;letter-spacing:-0.025em;
+  color:#111;margin-bottom:16px;
+}
+.cta-sub{
+  font-size:14px;color:#666;
+  margin-bottom:36px;max-width:480px;margin-left:auto;margin-right:auto;
+}
+.cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+
+/* ══════════════════════════════
+   FOOTER
+══════════════════════════════ */
+footer{
+  border-top:1px solid rgba(0,0,0,0.07);
+  padding:32px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:16px;
+}
+.footer-left{}
+.footer-logo-text{
+  font-size:13px;font-weight:600;letter-spacing:0.08em;
+  color:#111;margin-bottom:6px;
+}
+.footer-copy{
+  font-size:11px;color:#888;line-height:1.6;
+  max-width:460px;
+}
+.footer-copy .ca{color:#555;}
+
+.footer-right{
+  display:flex;align-items:center;gap:8px;
+}
+.social-link{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;color:#666;
+  text-decoration:none;
+  transition:color 0.15s;
+  padding:6px 10px;
+  border:1px solid rgba(0,0,0,0.12);
+  border-radius:6px;
+}
+.social-link:hover{color:#111;border-color:rgba(0,0,0,0.25);}
+
+/* ══════════════════════════════
+   FADE-IN
+══════════════════════════════ */
+.fade{
+  opacity:0;transform:translateY(16px);
+  transition:opacity 0.6s ease,transform 0.6s ease;
+}
+.fade.in{opacity:1;transform:translateY(0);}
+
+@media(max-width:768px){
+  nav{padding:0 16px;}
+  .nav-center{display:none;}
+  .hero{padding:80px 20px 50px;}
+  .code-section,.products-section,.how-section,.protocol-section,.cta-section{padding:70px 20px;}
+  .code-compare{grid-template-columns:1fr;}
+  .products-grid{grid-template-columns:1fr;}
+  .privacy-grid{grid-template-columns:1fr;gap:32px;}
+  footer{padding:24px 20px;flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-text">S H I E L D</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Shield</a>
+  <div class="nav-center">
+    <a href="#protocol">Protocol</a>
+    <a href="#privacy">Privacy</a>
+    <a href="#compliance">Compliance</a>
+    <a href="#docs">Docs</a>
+  </div>
+  <div class="nav-right">
+    <a href="#" class="btn-ghost-nav">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      GitHub
+    </a>
+    <a href="#" class="btn-app">App →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-geo">
+    <canvas id="heroCanvas"></canvas>
+  </div>
+  <div class="hero-content">
+    <span class="hero-label fade">Privacy Layer</span>
+    <h1 class="hero-title fade">
+      Privacy-first<br>
+      infrastructure for <span class="rotating-word" id="rotWord">DeFi</span>
+    </h1>
+    <p class="hero-sub fade">Building privacy-preserving protocols for the agent economy.</p>
+    <div class="hero-btns fade">
+      <a href="#" class="btn-pill-primary">Read the Protocol →</a>
+      <a href="#" class="btn-pill-ghost">View Demo</a>
+    </div>
+    <div class="hero-tags fade">
+      <span class="hero-tag">Privacy First</span>
+      <span class="hero-tag">Agent Native</span>
+      <span class="hero-tag">Open Source</span>
+    </div>
+  </div>
+</section>
+
+<!-- CODE: PRIVACY IN ONE LINE -->
+<section class="code-section" id="privacy">
+  <span class="section-eyebrow fade">Drop-in replacement</span>
+  <h2 class="section-title fade">Privacy in one line</h2>
+  <p class="section-sub fade">Same API. Same simplicity. Complete privacy.</p>
+
+  <div class="code-compare fade">
+    <!-- Standard x402 -->
+    <div class="code-card">
+      <div class="code-card-header">
+        <span class="code-card-label">Standard · x402</span>
+        <span class="badge badge-exposed">● Exposed</span>
+      </div>
+      <pre><span class="c-kw">import</span> { <span class="c-fn-std">x402</span> } <span class="c-kw">from</span> <span class="c-from-std">'@x402/sdk'</span>
+
+<span class="c-kw">const</span> <span style="color:#e8eaf6">payment</span> = <span class="c-kw">await</span> <span class="c-fn-std">x402</span><span style="color:#8ba5c8">.pay({</span>
+  <span style="color:#e8eaf6">amount:</span> <span class="c-num">100</span><span style="color:#8ba5c8">,</span>
+  <span style="color:#e8eaf6">recipient:</span> <span style="color:#e8eaf6">merchant</span><span style="color:#8ba5c8">,</span>
+  <span class="c-cm-bad">// Payment history linkable</span>
+  <span class="c-cm-bad">// Browsing patterns exposed</span>
+<span style="color:#8ba5c8">})</span></pre>
+    </div>
+    <!-- Private px402 -->
+    <div class="code-card private-card">
+      <div class="code-card-header">
+        <span class="code-card-label">Private · PX402</span>
+        <span class="badge badge-private">● Private</span>
+      </div>
+      <pre><span class="c-kw">import</span> { <span class="c-fn-prv">px402</span> } <span class="c-kw">from</span> <span class="c-from-prv">'@shield/sdk'</span>
+
+<span class="c-kw">const</span> <span style="color:#e8eaf6">payment</span> = <span class="c-kw">await</span> <span class="c-fn-prv">px402</span><span style="color:#8ba5c8">.pay({</span>
+  <span style="color:#e8eaf6">amount:</span> <span class="c-num">100</span><span style="color:#8ba5c8">,</span>
+  <span style="color:#e8eaf6">recipient:</span> <span style="color:#e8eaf6">merchant</span><span style="color:#8ba5c8">,</span>
+  <span class="c-cm-good">// Unlinkable credentials</span>
+  <span class="c-cm-good">// Zero-knowledge proofs</span>
+<span style="color:#8ba5c8">})</span></pre>
+    </div>
+  </div>
+
+  <div class="install-box fade">
+    <div class="install-label">Installation</div>
+    <div class="install-cmd">
+      <span class="prompt">$</span>
+      <span>npm install <span class="pkg">@shield/sdk</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="products-section" id="protocol">
+  <span class="section-eyebrow fade">Our Products</span>
+  <h2 class="section-title fade" style="max-width:500px;margin:0 auto 8px;">Our Products</h2>
+  <p class="section-sub fade">Privacy-preserving infrastructure for the agent economy</p>
+
+  <div class="products-grid">
+    <div class="product-item fade">
+      <div class="product-icon">🔒</div>
+      <div class="product-title">x402 Payment Privacy</div>
+      <div class="product-desc">Our first product. Unlinkable payments for AI agents that keep browsing patterns confidential while staying compliant.</div>
+    </div>
+    <div class="product-item fade">
+      <div class="product-icon">⏳</div>
+      <div class="product-title">More Coming Soon</div>
+      <div class="product-desc">We're building a comprehensive suite of privacy tools for AI agents. Stay tuned for announcements.</div>
+    </div>
+    <div class="product-item fade">
+      <div class="product-icon">⚡</div>
+      <div class="product-title">Open Source</div>
+      <div class="product-desc">All Shield protocols are open source. Built by the community, for the community.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW x402 WORKS -->
+<section class="how-section" id="compliance">
+  <span class="section-eyebrow fade">How x402 Works</span>
+  <h2 class="section-title fade">How x402 Works</h2>
+  <p class="section-sub fade">Our first product: privacy-preserving payment protocol</p>
+
+  <div class="how-steps">
+    <div class="how-step fade">
+      <span class="step-num-badge">1</span>
+      <div class="step-content">
+        <div class="step-title">Anonymous Credential Issuance</div>
+        <div class="step-desc">Agent obtains blinded credentials from payment provider without revealing identity or destination.</div>
+      </div>
+    </div>
+    <div class="how-step fade">
+      <span class="step-num-badge">2</span>
+      <div class="step-content">
+        <div class="step-title">Privacy-Preserving Payment</div>
+        <div class="step-desc">x402 challenge is met with unlinkable proof. Merchant verifies payment without learning agent history.</div>
+      </div>
+    </div>
+    <div class="how-step fade">
+      <span class="step-num-badge">3</span>
+      <div class="step-content">
+        <div class="step-title">Selective Compliance</div>
+        <div class="step-desc">Regulatory requirements met through zero-knowledge proofs, revealing only what's legally required.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROTOCOL DIAGRAM -->
+<section class="protocol-section">
+  <h2 class="section-title fade">x402 Privacy Protocol</h2>
+  <p class="section-sub fade">Cryptographic separation of payment and identity</p>
+
+  <div class="diagram fade" id="protocolDiagram">
+    <canvas id="diagramCanvas"></canvas>
+  </div>
+
+  <h3 class="section-title fade" style="font-size:clamp(24px,3vw,36px);margin-bottom:12px;">
+    Privacy for Every Agent Interaction
+  </h3>
+  <p class="section-sub fade">Protecting agent privacy across payments, data, and beyond</p>
+
+  <div class="privacy-grid fade">
+    <div>
+      <div class="privacy-feat-title">Private Payments (x402)</div>
+      <div class="privacy-feat-desc">Agents pay for services without revealing browsing patterns or creating linkable payment trails.</div>
+    </div>
+    <div>
+      <div class="privacy-feat-title">Confidential Data Access</div>
+      <div class="privacy-feat-desc">Access sensitive data and APIs while protecting query patterns and usage behavior.</div>
+    </div>
+    <div>
+      <div class="privacy-feat-title">Anonymous Compute</div>
+      <div class="privacy-feat-desc">Purchase compute resources without revealing workload types or model architectures.</div>
+    </div>
+    <div>
+      <div class="privacy-feat-title">Privacy-First Infrastructure</div>
+      <div class="privacy-feat-desc">Building the foundation for agent privacy across every interaction type.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="cta-title fade">Join the Privacy Revolution</h2>
+  <p class="cta-sub fade">Open protocols, open source. Build privacy-first AI agents with Shield infrastructure.</p>
+  <div class="cta-btns fade">
+    <a href="#" class="btn-pill-primary">Read Documentation →</a>
+    <a href="#" class="btn-pill-ghost">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      View on GitHub
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <div class="footer-logo-text">Shield</div>
+    <div class="footer-copy">
+      © 2026 Shield Protocol. Open source under MIT License.
+    </div>
+  </div>
+  <div class="footer-right">
+    <a href="#" class="social-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
+      Follow us on X
+    </a>
+  </div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════
+   LOADER
+═══════════════════════════════════════ */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+    startFades();
+  }, 1800);
+});
+
+/* ═══════════════════════════════════════
+   ANIMATED HERO BACKGROUND — Canvas
+   Replicates the moving diagonal light
+   beams seen on shield.com
+═══════════════════════════════════════ */
+(function initHeroCanvas() {
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, t = 0, mouseX = 0.5, mouseY = 0.5;
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Track mouse for subtle parallax
+  document.addEventListener('mousemove', e => {
+    mouseX += (e.clientX / window.innerWidth  - mouseX) * 0.04;
+    mouseY += (e.clientY / window.innerHeight - mouseY) * 0.04;
+  });
+
+  // ── Bold moving blue orbs ──────────────
+  const orbs = [
+    // x, y = starting pos (0-1), r = radius ratio, sx/sy = speed, phase, colors
+    { x:0.20, y:0.25, r:0.42, sx:0.000040, sy:0.000028, ph:0.0  },
+    { x:0.75, y:0.18, r:0.36, sx:0.000032, sy:0.000048, ph:1.8  },
+    { x:0.55, y:0.72, r:0.38, sx:0.000055, sy:0.000030, ph:3.5  },
+    { x:0.08, y:0.60, r:0.28, sx:0.000045, sy:0.000060, ph:0.9  },
+    { x:0.88, y:0.65, r:0.32, sx:0.000028, sy:0.000042, ph:2.4  },
+    { x:0.40, y:0.05, r:0.24, sx:0.000060, sy:0.000035, ph:1.2  },
+  ];
+
+  function drawOrbs(time) {
+    orbs.forEach((o, i) => {
+      // lissajous drift — smooth organic movement
+      const cx = (o.x
+        + Math.sin(time * o.sx + o.ph) * 0.20
+        + Math.cos(time * o.sy * 0.65 + o.ph + 1) * 0.10
+        + (mouseX - 0.5) * 0.05) * W;
+      const cy = (o.y
+        + Math.cos(time * o.sy + o.ph) * 0.18
+        + Math.sin(time * o.sx * 0.75 + o.ph + 2) * 0.09
+        + (mouseY - 0.5) * 0.04) * H;
+
+      const base   = o.r * Math.min(W, H);
+      const radius = base * (1 + 0.07 * Math.sin(time * 0.00080 + o.ph));
+
+      // Alternating vivid / pale blue per orb
+      const vivid  = i % 2 === 0;
+      const r = vivid ? 37  : 59;
+      const g = vivid ? 99  : 130;
+      const b = vivid ? 235 : 246;
+      const peakA = vivid ? 0.55 : 0.40;
+
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+      grad.addColorStop(0,    `rgba(${r},${g},${b},${peakA})`);
+      grad.addColorStop(0.30, `rgba(${r},${g},${b},${peakA * 0.65})`);
+      grad.addColorStop(0.60, `rgba(${r},${g},${b},${peakA * 0.28})`);
+      grad.addColorStop(0.85, `rgba(${r},${g},${b},${peakA * 0.08})`);
+      grad.addColorStop(1,    `rgba(${r},${g},${b},0)`);
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    });
+  }
+
+  function drawVignette() {
+    // white fade at edges — keeps text readable
+    const grad = ctx.createRadialGradient(W/2, H/2, H*0.05, W/2, H/2, H*1.05);
+    grad.addColorStop(0,    'rgba(255,255,255,0)');
+    grad.addColorStop(0.60, 'rgba(255,255,255,0.15)');
+    grad.addColorStop(1,    'rgba(255,255,255,0.88)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  function frame(ts) {
+    t = ts;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+    drawOrbs(t);
+    drawVignette();
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ═══════════════════════════════════════
+   SCROLL PARALLAX — sections bg shift
+═══════════════════════════════════════ */
+(function initParallax() {
+  const hero = document.querySelector('.hero');
+  let ticking = false;
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const sy = window.scrollY;
+        // Canvas drifts up slightly as user scrolls
+        const canvas = document.getElementById('heroCanvas');
+        if (canvas) canvas.style.transform = `translateY(${sy * 0.25}px)`;
+        // Hero content subtle opposite drift
+        const hc = document.querySelector('.hero-content');
+        if (hc) hc.style.transform = `translateY(${sy * 0.08}px)`;
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+})();
+
+/* ═══════════════════════════════════════
+   ANIMATED PROTOCOL DIAGRAM
+═══════════════════════════════════════ */
+(function initDiagram() {
+  const canvas = document.getElementById('diagramCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, t = 0;
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    W = canvas.width  = rect.width  || 520;
+    H = canvas.height = 320;
+  }
+  resize();
+  window.addEventListener('resize', () => { resize(); });
+
+  // Node definitions
+  const topNodes = ['Agent','Merchant','Provider','Verifier'];
+  const centerLabel = '🔒  shield';
+  const bottomLabels = ['✓  compliant', '🔒  secure'];
+  const bottomNode = 'x402';
+
+  // Travelling packets along wires
+  const packets = [];
+  let packetTimer = 0;
+
+  function spawnPacket() {
+    const fromIdx = Math.floor(Math.random() * topNodes.length);
+    packets.push({ fromIdx, progress: 0, speed: 0.006 + Math.random() * 0.004, alpha: 1 });
+  }
+
+  function drawRoundRect(x, y, w, h, r, fill, stroke) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+    if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+    if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+  }
+
+  function frame(ts) {
+    t = ts * 0.001;
+    ctx.clearRect(0, 0, W, H);
+
+    // ── Layout ──
+    const nodeW = 80, nodeH = 32, nodeR = 6;
+    const totalW = topNodes.length * nodeW + (topNodes.length - 1) * 18;
+    const startX = (W - totalW) / 2;
+    const topY   = 24;
+    const centerX = W / 2;
+    const centerY = topY + nodeH + 68;
+    const centerW = 110, centerH = 34;
+    const bottomY1 = centerY + centerH + 40;
+    const bottomY2 = bottomY1 + 36;
+
+    // top node centers
+    const topCenters = topNodes.map((_, i) => ({
+      x: startX + i * (nodeW + 18) + nodeW / 2,
+      y: topY + nodeH / 2,
+    }));
+
+    // ── Draw wires: top nodes → center ──
+    topCenters.forEach((nc) => {
+      const grad = ctx.createLinearGradient(nc.x, nc.y + nodeH / 2, centerX, centerY);
+      grad.addColorStop(0, 'rgba(255,255,255,0.06)');
+      grad.addColorStop(1, 'rgba(255,255,255,0.12)');
+      ctx.beginPath();
+      ctx.moveTo(nc.x, nc.y + nodeH / 2);
+      ctx.lineTo(centerX, centerY);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 5]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    });
+
+    // center → bottom labels wire
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY + centerH);
+    ctx.lineTo(centerX, bottomY1 - 8);
+    ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 5]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // center → x402
+    ctx.beginPath();
+    ctx.moveTo(centerX, bottomY1 + 20);
+    ctx.lineTo(centerX, bottomY2 - 6);
+    ctx.strokeStyle = 'rgba(0,0,0,0.07)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2, 6]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // ── Animate travelling packets ──
+    packetTimer += 0.016;
+    if (packetTimer > 0.9) { spawnPacket(); packetTimer = 0; }
+
+    packets.forEach((p, i) => {
+      p.progress += p.speed;
+      const nc = topCenters[p.fromIdx];
+      const px = nc.x + (centerX - nc.x) * p.progress;
+      const py = (nc.y + nodeH / 2) + (centerY - (nc.y + nodeH / 2)) * p.progress;
+
+      if (p.progress > 0.85) p.alpha -= 0.06;
+
+      // glow
+      const grd = ctx.createRadialGradient(px, py, 0, px, py, 8);
+      grd.addColorStop(0, `rgba(120,200,255,${p.alpha * 0.9})`);
+      grd.addColorStop(1, `rgba(120,200,255,0)`);
+      ctx.beginPath();
+      ctx.arc(px, py, 8, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+
+      // dot
+      ctx.beginPath();
+      ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(180,230,255,${p.alpha})`;
+      ctx.fill();
+
+      if (p.alpha <= 0) packets.splice(i, 1);
+    });
+
+    // ── Draw top nodes ──
+    topNodes.forEach((label, i) => {
+      const x = startX + i * (nodeW + 18);
+      const pulse = 0.04 + 0.02 * Math.sin(t * 1.5 + i * 0.9);
+      drawRoundRect(x, topY, nodeW, nodeH, nodeR,
+        `rgba(0,0,0,${pulse * 0.5})`,
+        `rgba(0,0,0,${0.12 + 0.04 * Math.sin(t + i)})`
+      );
+      ctx.fillStyle = '#aaaaaa';
+      ctx.font = '11px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, x + nodeW / 2, topY + nodeH / 2);
+    });
+
+    // ── Draw center node (shield) ──
+    const cxBox = centerX - centerW / 2;
+    const pulse = 0.06 + 0.03 * Math.sin(t * 1.2);
+    // outer glow
+    const glowGrad = ctx.createRadialGradient(centerX, centerY + centerH/2, 0, centerX, centerY + centerH/2, 60);
+    glowGrad.addColorStop(0, `rgba(100,160,255,${0.08 + 0.04 * Math.sin(t)})`);
+    glowGrad.addColorStop(1, 'rgba(100,160,255,0)');
+    ctx.fillStyle = glowGrad;
+    ctx.fillRect(centerX - 60, centerY - 10, 120, centerH + 20);
+
+    drawRoundRect(cxBox, centerY, centerW, centerH, 7,
+      `rgba(0,0,0,${pulse * 0.4})`,
+      `rgba(0,0,0,${0.15 + 0.06 * Math.sin(t * 0.8)})`
+    );
+    ctx.fillStyle = '#222';
+    ctx.font = '12px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(centerLabel, centerX, centerY + centerH / 2);
+
+    // ── Bottom labels: compliant / secure ──
+    const labW = 100, labH = 26;
+    const bPulse = 0.04 + 0.015 * Math.sin(t * 0.8 + 1);
+    drawRoundRect(centerX - labW - 24, bottomY1, labW, labH, 5,
+      `rgba(0,0,0,${bPulse * 0.3})`, `rgba(0,0,0,0.1)`);
+    ctx.fillStyle = '#666';
+    ctx.font = '10px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('✓  compliant', centerX - labW / 2 - 24, bottomY1 + labH / 2);
+
+    drawRoundRect(centerX + 24, bottomY1, labW, labH, 5,
+      `rgba(0,0,0,${bPulse * 0.3})`, `rgba(0,0,0,0.1)`);
+    ctx.fillStyle = '#666';
+    ctx.fillText('🔒  secure', centerX + 24 + labW / 2, bottomY1 + labH / 2);
+
+    // ── x402 bottom node ──
+    const x402W = 70, x402H = 28;
+    const xPulse = 0.04 + 0.02 * Math.sin(t * 1.1 + 2);
+    drawRoundRect(centerX - x402W / 2, bottomY2, x402W, x402H, 5,
+      `rgba(0,0,0,${xPulse * 0.3})`, `rgba(0,0,0,${0.12 + 0.04 * Math.sin(t)})`);
+    ctx.fillStyle = '#555';
+    ctx.font = '11px Inter, sans-serif';
+    ctx.fillText('x402', centerX, bottomY2 + x402H / 2);
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+function startFades() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('in');
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+  document.querySelectorAll('.fade').forEach(el => {
+    const siblings = Array.from(el.parentElement.querySelectorAll('.fade'));
+    const idx = siblings.indexOf(el);
+    el.style.transitionDelay = (idx * 0.08) + 's';
+    obs.observe(el);
+  });
+}
+
+/* ═══════════════════════════════════════
+   ROTATING WORD
+═══════════════════════════════════════ */
+const words = ['DeFi', 'AI Agents', 'Web3', 'the Future'];
+let wi = 0;
+const rotEl = document.getElementById('rotWord');
+setInterval(() => {
+  rotEl.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+  rotEl.style.opacity = '0';
+  rotEl.style.transform = 'translateY(-10px)';
+  setTimeout(() => {
+    wi = (wi + 1) % words.length;
+    rotEl.textContent = words[wi];
+    rotEl.style.opacity = '0.55';
+    rotEl.style.transform = 'translateY(0)';
+  }, 320);
+}, 2800);
+</script>
+</body>
+</html>
